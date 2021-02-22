@@ -1,10 +1,12 @@
 import pygame
+from pygame.sprite import Sprite
 
 
-class Nave:
+class Nave(Sprite):
     """Class para definir os parametros da nave"""
     def __init__(self, ai_game):
         """Inicia a nave e as configurações da posição inicial"""
+        super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.configuracoes
         self.screen_rect = ai_game.screen.get_rect()
@@ -39,3 +41,5 @@ class Nave:
     def blitme(self):
         """Posiciona a nave na sua posição padrão"""
         self.screen.blit(self.image, self.rect)
+
+

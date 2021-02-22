@@ -5,8 +5,11 @@ import pygame
 
 from configs import Configuracoes
 from game_stats import GameStats
+from placar import Placar
+from botao import Botao
 from nave import Nave
 from tiro import Tiro
+from background import Background
 from klingons import Klingon
 
 
@@ -24,13 +27,18 @@ class InvasaoKlingon:
         self.configuracoes.screen_height = self.screen.get_rect().height
         # self.screen = pygame.display.set_mode((self.configuracoes.screen_width, self.configuracoes.screen_height))
         pygame.display.set_caption("Invasão Klingon")
+        self.background = Background(self)
         # Cria uma instância para armazenar os dados do jogo
         self.stats = GameStats(self)
+        self.placar = Placar(self)
         self.nave = Nave(self)
         self.tiros = pygame.sprite.Group()
         self.klingons = pygame.sprite.Group()
 
         self._criar_frota()
+
+        # Botão de iniciar
+        self.play_botao = Botao(self, "Íniciar")
 
     def run_game(self):
         """Inicia o loop principal do jogo"""
@@ -40,6 +48,7 @@ class InvasaoKlingon:
                 self.nave.update()
                 self._update_tiros()
                 self._update_klingons()
+
 
             self._update_screen()
 
@@ -52,6 +61,33 @@ class InvasaoKlingon:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_iniciar_botao(mouse_pos)
+
+    def _check_iniciar_botao(self, mouse_pos):
+        """Inicia um novo jogo quando o usuário clicar no botão"""
+        click_botao = self.play_botao.rect.collidepoint(mouse_pos)
+        if click_botao and not self.stats.game_active:
+            # Reset as configs do jogo
+            self.configuracoes.inicializar_dinamica_configs()
+            # Reset os stats do jogo
+            self.stats.reset_stats()
+            self.stats.game_active = True
+            self.placar.prep_placar()
+            self.placar.prep_level()
+            self.placar.prep_naves()
+
+            # Retira os aliens e disparos da partida antiga
+            self.klingons.empty()
+            self.tiros.empty()
+
+            # Cria uma nova frota e centraliza a nave
+            self._criar_frota()
+            self.nave.center_nave()
+
+            # Esconder o cursor do mouse
+            pygame.mouse.set_visible(False)
 
     def _check_keydown_events(self, event):
         """Responde as teclas"""
@@ -64,6 +100,16 @@ class InvasaoKlingon:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._dispara_tiro()
+        elif event.key == pygame.K_p:
+            self._iniciar_jogo()
+
+    def _iniciar_jogo(self):
+        # Reset as configs do jogo
+        self.configuracoes.inicializar_dinamica_configs()
+        # Reset os stats do jogo
+        self.stats.reset_stats()
+        self.stats.game_active = True
+        self.placar.prep_placar()
 
     def _check_keyup_events(self, event):
         """Responde a ausência de interação com o teclado"""
@@ -92,10 +138,20 @@ class InvasaoKlingon:
         # Checar se algum disparo atingiu uma nave inimiga
         # Se sim, retirar a nave klingon da tela
         colisao = pygame.sprite.groupcollide(self.tiros, self.klingons, True, True)
+        if colisao:
+            for klingon in colisao.values():
+                self.stats.score += self.configuracoes.klingon_points * len(klingon)
+            self.placar.prep_placar()
+            self.placar.check_high_score()
         if not self.klingons:
             # Destroi os tiros existentes e cria uma nova tropa
             self.tiros.empty()
             self._criar_frota()
+            self.configuracoes.aumentar_vel()
+
+            # Aumenta o nível
+            self.stats.level += 1
+            self.placar.prep_level()
 
     def _update_klingons(self):
         """Atualiza a posição de todas as naves Klingons"""
@@ -114,6 +170,7 @@ class InvasaoKlingon:
         if self.stats.nave_left > 0:
             # Decrementa nave_left
             self.stats.nave_left -= 1
+            self.placar.prep_naves()
 
             # Se livra das naves restantes e disparos
             self.klingons.empty()
@@ -127,6 +184,7 @@ class InvasaoKlingon:
             sleep(0.5)
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _criar_frota(self):
         """Cria as naves Bird of Prey"""
@@ -186,6 +244,11 @@ class InvasaoKlingon:
         for tiros in self.tiros.sprites():
             tiros.draw_tiro()
         self.klingons.draw(self.screen)
+        self.placar.show_placar()
+
+        # Desenha o botão de Íniciar se o jogo estiver inativo
+        if not self.stats.game_active:
+            self.play_botao.draw_botao()
 
         pygame.display.flip()
 
