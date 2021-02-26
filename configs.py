@@ -10,15 +10,15 @@ class Configuracoes:
         self.screen_height = 800
         self.bg_color = (230, 230, 230)
         self.background = pygame.transform.scale(pygame.image.load("images/space.jpg"),
-                                            (self.screen_width, self.screen_height))
+                                            (1440, 900))
         self.rect = self.background.get_rect()
         # Configurações da nave
         self.nave_limit = 3
         # Configurações do tiro
-        self.tiro_width = 9000
+        self.tiro_width = 9
         self.tiro_height = 15
-        self.tiro_cor = (60, 60, 60)
-        self.tiros_permitidos = 6
+        self.tiro_cor = (94,23,16,255)
+        self.tiros_permitidos = 3
         # Configurações da nave Klingon
         self.fleet_drop_speed = 10
 
@@ -34,7 +34,7 @@ class Configuracoes:
         """Inicializa as configurações que são alteradas durante o jogo"""
         self.nave_velocidade = 1.5
         self.tiro_vel = 3.0
-        self.vel_klingon = 3.0
+        self.vel_klingon = 1
 
         # direção_frota 1 representa a direita; -1 representa a esquerda
         self.direcao_frota = 1

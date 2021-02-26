@@ -1,9 +1,9 @@
 import pygame.font
 
 class Botao:
-    def __init__(self,ai_game,msg):
+    def __init__(self, ik_game, msg):
         """Inicializa os atributos"""
-        self.screen = ai_game.screen
+        self.screen = ik_game.screen
         self.screen_rect = self.screen.get_rect()
 
         # Dimensões e propriedades do botão

@@ -5,11 +5,11 @@ from pygame.sprite import Sprite
 class Klingon(Sprite):
     """Class que representa as naves klingons e configura sua posição inicial"""
 
-    def __init__(self, ai_game):
+    def __init__(self, ik_game):
         """Cria a nave e a posiciona"""
         super().__init__()
-        self.screen = ai_game.screen
-        self.settings = ai_game.configuracoes
+        self.screen = ik_game.screen
+        self.settings = ik_game.configuracoes
 
         # Carrega a imagem da nave e define os atributos rect
         self.image = pygame.transform.scale(pygame.image.load('images/bird_of_prey.bmp'), (70, 60))

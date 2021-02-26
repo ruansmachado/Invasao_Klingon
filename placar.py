@@ -7,16 +7,16 @@ from nave import Nave
 class Placar:
     """Class que reporta o score do jogador"""
 
-    def __init__(self, ai_game):
+    def __init__(self, ik_game):
         """Inicializa a coleta de dados"""
-        self.ai_game = ai_game
-        self.screen = ai_game.screen
+        self.ik_game = ik_game
+        self.screen = ik_game.screen
         self.screen_rect = self.screen.get_rect()
-        self.settings = ai_game.configuracoes
-        self.stats = ai_game.stats
+        self.settings = ik_game.configuracoes
+        self.stats = ik_game.stats
 
         # Font para dispositive os dados
-        self.text_color = (30, 30, 30)
+        self.text_color = (250, 250, 250)
         self.font = pygame.font.SysFont(None, 48)
 
         # Inicia o placar inicial
@@ -29,7 +29,7 @@ class Placar:
         """Torna o placar em imagem"""
         rounded_placar = round(self.stats.score, -1)
         placar_str = "{:,}".format(rounded_placar)
-        self.placar_image = self.font.render(placar_str, True, self.text_color, self.settings.bg_color)
+        self.placar_image = self.font.render(placar_str, True, self.text_color, (12, 13, 17, 255))
 
         # Posiciona o placar na parte superior direita da tela
         self.placar_rect = self.placar_image.get_rect()
@@ -46,7 +46,7 @@ class Placar:
         """Torna o mais alto score em uma imagem"""
         high_score = round(self.stats.high_score, -1)
         high_score_str = "{:,}".format(high_score)
-        self.high_score_image = self.font.render(high_score_str, True, self.text_color, self.settings.bg_color)
+        self.high_score_image = self.font.render(high_score_str, True, self.text_color, (12, 13, 17, 255))
 
         # Centraliza o high score no alto da tela
         self.high_score_rect = self.high_score_image.get_rect()
@@ -62,18 +62,19 @@ class Placar:
     def prep_level(self):
         """Score board"""
         level_str = str(self.stats.level)
-        self.level_image = self.font.render(level_str, True, self.text_color, self.settings.bg_color)
+        self.level_image = self.font.render(level_str, True, self.text_color, (12, 13, 17, 255))
 
         # Posição do level
         self.level_rect = self.level_image.get_rect()
         self.level_rect.right = self.placar_rect.right
         self.level_rect.top = self.placar_rect.bottom + 10
 
+
     def prep_naves(self):
         """Amostra quantas naves ainda restam"""
         self.naves = Group()
         for nave_num in range(self.stats.nave_left):
-            nave = Nave(self.ai_game)
+            nave = Nave(self.ik_game)
             nave.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('images/aventine_ship.bmp'),
                                                                     (50, 20)), 90)
             nave.rect.x = 10 + nave_num * nave.rect.width

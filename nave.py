@@ -4,12 +4,12 @@ from pygame.sprite import Sprite
 
 class Nave(Sprite):
     """Class para definir os parametros da nave"""
-    def __init__(self, ai_game):
+    def __init__(self, ik_game):
         """Inicia a nave e as configurações da posição inicial"""
         super().__init__()
-        self.screen = ai_game.screen
-        self.settings = ai_game.configuracoes
-        self.screen_rect = ai_game.screen.get_rect()
+        self.screen = ik_game.screen
+        self.settings = ik_game.configuracoes
+        self.screen_rect = ik_game.screen.get_rect()
         # Carrega a imagem da nave e mapea a posição
         self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('images/aventine_ship.bmp'),
                                                                     (130, 55)), 90)

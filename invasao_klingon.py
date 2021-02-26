@@ -9,7 +9,6 @@ from placar import Placar
 from botao import Botao
 from nave import Nave
 from tiro import Tiro
-from background import Background
 from klingons import Klingon
 
 
@@ -22,19 +21,20 @@ class InvasaoKlingon:
         self.configuracoes = Configuracoes()
         """Para habilitar modo Fullscreen, retire as anotações 
         dos três códigos abaixo e adicione observação no 'self.screen'"""
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.configuracoes.screen_width = self.screen.get_rect().width
-        self.configuracoes.screen_height = self.screen.get_rect().height
-        # self.screen = pygame.display.set_mode((self.configuracoes.screen_width, self.configuracoes.screen_height))
+        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # self.configuracoes.screen_width = self.screen.get_rect().width
+        # self.configuracoes.screen_height = self.screen.get_rect().height
+        self.screen = pygame.display.set_mode((self.configuracoes.screen_width, self.configuracoes.screen_height))
         pygame.display.set_caption("Invasão Klingon")
-        self.background = Background(self)
         # Cria uma instância para armazenar os dados do jogo
         self.stats = GameStats(self)
         self.placar = Placar(self)
+        self.placar = Placar(self)
+        self.open_music = pygame.mixer.Sound("images/tng_open.mp3") # Abertura da série Star Trek: Next Generation
+        self.disp_som = pygame.mixer.Sound("images/torp.mp3")
         self.nave = Nave(self)
         self.tiros = pygame.sprite.Group()
         self.klingons = pygame.sprite.Group()
-
         self._criar_frota()
 
         # Botão de iniciar
@@ -44,11 +44,13 @@ class InvasaoKlingon:
         """Inicia o loop principal do jogo"""
         while True:
             self._check_events()
+            self.open_music.play(loops=-1)
+            self.open_music.set_volume(0.1)
             if self.stats.game_active:
                 self.nave.update()
                 self._update_tiros()
                 self._update_klingons()
-
+                self.open_music.stop()
 
             self._update_screen()
 
@@ -78,6 +80,7 @@ class InvasaoKlingon:
             self.placar.prep_level()
             self.placar.prep_naves()
 
+
             # Retira os aliens e disparos da partida antiga
             self.klingons.empty()
             self.tiros.empty()
@@ -89,6 +92,7 @@ class InvasaoKlingon:
             # Esconder o cursor do mouse
             pygame.mouse.set_visible(False)
 
+
     def _check_keydown_events(self, event):
         """Responde as teclas"""
         if event.key == pygame.K_RIGHT:
@@ -98,10 +102,13 @@ class InvasaoKlingon:
             self.nave.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
-        elif event.key == pygame.K_SPACE:
-            self._dispara_tiro()
         elif event.key == pygame.K_p:
             self._iniciar_jogo()
+        elif event.key == pygame.K_SPACE and self.stats.game_active is True:
+            self._dispara_tiro()
+            self.disp_som.play()
+            self.disp_som.set_volume(0.1)
+
 
     def _iniciar_jogo(self):
         # Reset as configs do jogo
@@ -110,6 +117,7 @@ class InvasaoKlingon:
         self.stats.reset_stats()
         self.stats.game_active = True
         self.placar.prep_placar()
+
 
     def _check_keyup_events(self, event):
         """Responde a ausência de interação com o teclado"""
@@ -239,7 +247,8 @@ class InvasaoKlingon:
 
     def _update_screen(self):
         # Redesenha a tela durante cada passada do loop
-        self.screen.fill(self.configuracoes.bg_color)
+        # self.screen.fill(self.configuracoes.bg_color)
+        self.screen.blit(self.configuracoes.background, [0, 0])
         self.nave.blitme()
         for tiros in self.tiros.sprites():
             tiros.draw_tiro()
@@ -250,10 +259,11 @@ class InvasaoKlingon:
         if not self.stats.game_active:
             self.play_botao.draw_botao()
 
+
         pygame.display.flip()
 
 
 if __name__ == '__main__':
     """Cria uma instancia do jogo e inicia a partida"""
-    ai = InvasaoKlingon()
-    ai.run_game()
+    ik = InvasaoKlingon()
+    ik.run_game()

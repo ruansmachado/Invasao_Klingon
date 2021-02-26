@@ -1,13 +1,19 @@
+import pygame
+
+
 class GameStats:
     """Monitora os dados do jogo"""
 
-    def __init__(self, ai_game):
+    def __init__(self, ik_game):
         """Inicia a coleta"""
-        self.settings = ai_game.configuracoes
+        self.settings = ik_game.configuracoes
         self.reset_stats()
 
         # Começa o jogo de forma inativa
         self.game_active = False
+        self.battle_music = pygame.mixer.Sound("images/first_contact.mp3")  # Assimilation battle sound
+        self.battle_music.play(loops=-1)
+        self.battle_music.set_volume(0.8)
 
         # O High score não deve nunca ser resetado
         self.high_score = 0
