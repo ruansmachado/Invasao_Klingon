@@ -1,4 +1,6 @@
 import pygame
+import os
+
 
 class Configuracoes:
     """Class que armazena todas as configurações do Invasão Klingon"""
@@ -9,15 +11,17 @@ class Configuracoes:
         self.screen_width = 1200
         self.screen_height = 800
         self.bg_color = (230, 230, 230)
-        self.background = pygame.transform.scale(pygame.image.load("images/space.jpg"),
-                                            (1440, 900))
+        self.background = pygame.transform.scale(pygame.image.load(
+            os.path.join("complemento/space.jpg")), (1440, 900))
+        self.logo = pygame.transform.scale(pygame.image.load(
+            os.path.join("complemento/STAR-TREK-LOGO.png")), (650, 366))
         self.rect = self.background.get_rect()
         # Configurações da nave
         self.nave_limit = 3
         # Configurações do tiro
         self.tiro_width = 9
         self.tiro_height = 15
-        self.tiro_cor = (94,23,16,255)
+        self.tiro_cor = (94, 23, 16, 255)
         self.tiros_permitidos = 3
         # Configurações da nave Klingon
         self.fleet_drop_speed = 10
@@ -49,6 +53,3 @@ class Configuracoes:
         self.vel_klingon *= self.speedup_scale
 
         self.klingon_points = int(self.klingon_points * self.placar_scale)
-
-
-

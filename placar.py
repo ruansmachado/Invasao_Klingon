@@ -1,7 +1,7 @@
 import pygame.font
+import os
 from pygame.sprite import Group
 from nave import Nave
-
 
 
 class Placar:
@@ -69,14 +69,13 @@ class Placar:
         self.level_rect.right = self.placar_rect.right
         self.level_rect.top = self.placar_rect.bottom + 10
 
-
     def prep_naves(self):
         """Amostra quantas naves ainda restam"""
         self.naves = Group()
         for nave_num in range(self.stats.nave_left):
             nave = Nave(self.ik_game)
-            nave.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('images/aventine_ship.bmp'),
-                                                                    (50, 20)), 90)
+            nave.image = pygame.transform.rotate(pygame.transform.scale(
+                pygame.image.load(os.path.join('complemento/aventine_ship.bmp')), (50, 20)), 90)
             nave.rect.x = 10 + nave_num * nave.rect.width
             nave.rect.y = 10
             self.naves.add(nave)

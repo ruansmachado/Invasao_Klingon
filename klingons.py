@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame.sprite import Sprite
 
 
@@ -12,7 +13,7 @@ class Klingon(Sprite):
         self.settings = ik_game.configuracoes
 
         # Carrega a imagem da nave e define os atributos rect
-        self.image = pygame.transform.scale(pygame.image.load('images/bird_of_prey.bmp'), (70, 60))
+        self.image = pygame.transform.scale(pygame.image.load(os.path.join('complemento/bird_of_prey.bmp')), (70, 60))
         self.rect = self.image.get_rect()
 
         # Cria uma nova nave perto do lado esquerdo superior na tela

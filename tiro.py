@@ -31,3 +31,4 @@ class Tiro(Sprite):
     def draw_tiro(self):
         """Desenha o tiro na tela"""
         pygame.draw.rect(self.screen, self.cor, self.rect)
+

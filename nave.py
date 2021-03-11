@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame.sprite import Sprite
 
 
@@ -11,8 +12,8 @@ class Nave(Sprite):
         self.settings = ik_game.configuracoes
         self.screen_rect = ik_game.screen.get_rect()
         # Carrega a imagem da nave e mapea a posição
-        self.image = pygame.transform.rotate(pygame.transform.scale(pygame.image.load('images/aventine_ship.bmp'),
-                                                                    (130, 55)), 90)
+        self.image = pygame.transform.rotate(pygame.transform.scale(
+            pygame.image.load(os.path.join('complemento/aventine_ship.bmp')), (130, 55)), 90)
         self.rect = self.image.get_rect()
         # Cria uma nova nave no parte baixa centralizado no meio da imagem
         self.rect.midbottom = self.screen_rect.midbottom
@@ -41,5 +42,3 @@ class Nave(Sprite):
     def blitme(self):
         """Posiciona a nave na sua posição padrão"""
         self.screen.blit(self.image, self.rect)
-
-

@@ -1,4 +1,5 @@
 import sys
+import os
 from time import sleep
 
 import pygame
@@ -30,15 +31,24 @@ class InvasaoKlingon:
         self.stats = GameStats(self)
         self.placar = Placar(self)
         self.placar = Placar(self)
-        self.open_music = pygame.mixer.Sound("images/tng_open.mp3") # Abertura da série Star Trek: Next Generation
-        self.disp_som = pygame.mixer.Sound("images/torp.mp3")
+        # Músicas de fundo
+        self.open_music = pygame.mixer.Sound(
+            os.path.join("complemento/tng_open.mp3"))  # Abertura da série Star Trek: Next Generation
+        self.battle_music = pygame.mixer.Sound(
+            os.path.join("complemento/first_contact.mp3"))  # Assimilation battle sound
+        # Sprites
         self.nave = Nave(self)
         self.tiros = pygame.sprite.Group()
         self.klingons = pygame.sprite.Group()
         self._criar_frota()
 
         # Botão de iniciar
-        self.play_botao = Botao(self, "Íniciar")
+        self.play_botao = Botao(self, "Iniciar")
+
+        # Icon
+        self.icon = pygame.transform.scale(pygame.image.load(
+            os.path.join("complemento/klingon_icon.png")), (35, 35))
+        pygame.display.set_icon(self.icon)
 
     def run_game(self):
         """Inicia o loop principal do jogo"""
@@ -48,9 +58,11 @@ class InvasaoKlingon:
             self.open_music.set_volume(0.1)
             if self.stats.game_active:
                 self.nave.update()
+                self.open_music.stop()
+                if self.open_music.stop:
+                    self.battle_music.play(loops=-1)
                 self._update_tiros()
                 self._update_klingons()
-                self.open_music.stop()
 
             self._update_screen()
 
@@ -63,9 +75,10 @@ class InvasaoKlingon:
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and self.stats.game_active is False:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_iniciar_botao(mouse_pos)
+                pygame.mixer.Channel(2).play(pygame.mixer.Sound(os.path.join("complemento/computerbeep_10.mp3")))
 
     def _check_iniciar_botao(self, mouse_pos):
         """Inicia um novo jogo quando o usuário clicar no botão"""
@@ -80,7 +93,6 @@ class InvasaoKlingon:
             self.placar.prep_level()
             self.placar.prep_naves()
 
-
             # Retira os aliens e disparos da partida antiga
             self.klingons.empty()
             self.tiros.empty()
@@ -91,7 +103,6 @@ class InvasaoKlingon:
 
             # Esconder o cursor do mouse
             pygame.mouse.set_visible(False)
-
 
     def _check_keydown_events(self, event):
         """Responde as teclas"""
@@ -104,11 +115,9 @@ class InvasaoKlingon:
             sys.exit()
         elif event.key == pygame.K_p:
             self._iniciar_jogo()
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound("complemento/computerbeep_10.mp3"))
         elif event.key == pygame.K_SPACE and self.stats.game_active is True:
             self._dispara_tiro()
-            self.disp_som.play()
-            self.disp_som.set_volume(0.1)
-
 
     def _iniciar_jogo(self):
         # Reset as configs do jogo
@@ -117,7 +126,6 @@ class InvasaoKlingon:
         self.stats.reset_stats()
         self.stats.game_active = True
         self.placar.prep_placar()
-
 
     def _check_keyup_events(self, event):
         """Responde a ausência de interação com o teclado"""
@@ -131,6 +139,8 @@ class InvasaoKlingon:
         if len(self.tiros) < self.configuracoes.tiros_permitidos:
             novo_disparo = Tiro(self)
             self.tiros.add(novo_disparo)
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound(os.path.join("complemento/torp.mp3")))
+        pygame.mixer.Channel(1).set_volume(0.35)
 
     def _update_tiros(self):
         """Atualiza a posição dos disparos e se deleta os antigos"""
@@ -257,8 +267,10 @@ class InvasaoKlingon:
 
         # Desenha o botão de Íniciar se o jogo estiver inativo
         if not self.stats.game_active:
+            self.screen.blit(self.configuracoes.background, [0, 0])
+            self.nave.blitme()
             self.play_botao.draw_botao()
-
+            self.screen.blit(self.configuracoes.logo, [270, 35])
 
         pygame.display.flip()
 
